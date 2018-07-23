@@ -1,0 +1,48 @@
+.main-class{
+	background-color: #f3f1f1;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.main-title{
+	text-decoration: underline;
+}
+
+.table-table{
+	width: 500px;
+}
+
+.todo-section{
+	background-color: #fff;
+	border: 1px solid #f3f1f1;
+	padding: 15px;
+	text-align: center;
+}
+
+.text-line{
+	padding: 2px;
+}
+
+.btn{
+	cursor: pointer;
+	padding: 2px 7px;
+	margin-left: 10px;
+	border: 1px solid #f3f1f1;
+}
+
+.hidden{
+	display: none;
+}
+
+.row-list{
+	
+	height:  40px;
+}
+
+.ready-class{
+	color: #00bcd4;
+	/*background-color: green;*/
+	text-decoration: line-through;
+
+}
