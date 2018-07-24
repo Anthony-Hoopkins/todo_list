@@ -2,11 +2,33 @@ document.addEventListener('DOMContentLoaded', () =>{
 
 	const addBtn = document.getElementById('add-btn');
 	const inner = document.getElementById('inner-field');
+	const date_field = document.getElementById('date-line');
 	const display = document.getElementById('table-list');
 
+	const todoListArr = [];
+	let infoFromInner; 
+	let infoDate;
+	const rowExampl = document.querySelector('.row-list');
+
+	let z = localStorage;
+	let y;
+
+	function insertData(){
+		Object.keys(localStorage).forEach( prop =>  todoListArr.push(JSON.parse(localStorage[prop])));
+		// todoListArr.forEach( prop =>   )
+		// localStorage.length !== 0 ? console.log(JSON.parse(z)) : '';
+		fillTodoDisplay(todoListArr);
+		console.log(todoListArr);
+	}
+
+	insertData();
+
+	console.log(localStorage);
+	
 	function Actions(elem) {
 
 		let curRow;
+		let infoForEdit;
 
 	    this.remo = function() {
 	       	console.log('удаляю');
@@ -19,6 +41,8 @@ document.addEventListener('DOMContentLoaded', () =>{
 	       	clList.forEach(item => item === 'ready-class' ? clList.remove('ready-class') : clList.add('ready-class'));
 	    };
 
+	    this.text = this.read;
+
 	    this.edit = function(e) {
 	       	console.log('редактирую');
 	       	infoForEdit = curRow.querySelector('.text-line').innerHTML;
@@ -26,7 +50,6 @@ document.addEventListener('DOMContentLoaded', () =>{
 			display.removeEventListener('click', commadRun);
 			curRow.querySelector('.edit-btn').addEventListener('click', saveAndExit);
 			window.addEventListener('keydown', saveChange);
-
 	   	};
 
 		let self = this;
@@ -62,21 +85,50 @@ document.addEventListener('DOMContentLoaded', () =>{
 
     new Actions();
 
+
+
 	addBtn.addEventListener('click', ()=>{
 
-		const rowExampl = document.querySelector('.row-list');
-		let infoFromInner = inner.value;	 
+		infoFromInner = inner.value;
+		infoDate = date_field.value;	 
 
 		if (infoFromInner && infoFromInner.trim() !== ''){
+			// fillTodoDisplay();
 			let newRow = rowExampl.cloneNode(true);
 			newRow.classList.remove('hidden');
 			newRow.querySelector('.text-line').innerHTML = infoFromInner;
-			display.insertBefore(newRow , display.firstChild);
+			newRow.querySelector('.date-line').innerHTML = infoDate
+			display.insertBefore(newRow , display.firstChild);			
 			inner.value = '';
+
+			let id = localStorage.length+1; // сделать нормальный id 
+			localStorage.setItem(id, JSON.stringify({id: id, text: infoFromInner, ready: true, deadLine:infoDate, createDate: +new Date()}));
+
 		}
 
 	});
 
+	function fillTodoDisplay(todoListArr){
+
+		todoListArr.forEach( prop => {
+
+			let newRow = rowExampl.cloneNode(true);
+			newRow.classList.remove('hidden');
+			newRow.querySelector('.text-line').innerHTML = prop.text;
+			newRow.querySelector('.date-line').innerHTML = prop.deadLine;
+			display.insertBefore(newRow , display.firstChild);
+
+		});
+	
+
+	}
+
+	inner.addEventListener('focus', () => window.addEventListener('keypress', onKeyPress));
+	inner.addEventListener('blur', () => window.removeEventListener('keypress', onKeyPress));	
+
+	function onKeyPress(e){
+		e.keyCode === 13 ? addBtn.dispatchEvent(new Event('click')) : '';
+	}
 
 });
 

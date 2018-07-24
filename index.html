@@ -15,37 +15,51 @@
 	<main class="main-class">
 
 		<section id="todo-section" class="todo-section">
+
 			<h1 class="main-title"> The TODO List </h1>
 			<!-- <h2 id="task-count" class="task-count"> Tasks </h2> -->
 
 			<div>
 				<input id="inner-field" placeholder="New task" class="inner-field" type="textarea" name="text-input">
+				<input id="date-line" class="date-field" type="date" name="date-input" value="2018-07-25">
 				<span id="add-btn" class="add-btn btn"> + Add</span>
 			</div>
 
 			<br>
-				<div class="row-list hidden">			 
-						<span class="text-line">  </span>
+
+
+			<div class="row-list hidden">	
+					<span class="date-line">	</span>		 
+					<span class="text-line">  	</span>
+					<div class="btn-panel">
 						<span class="ready-btn btn" title="ready"> v </span> 
-						<span class="edit-btn btn" title="edit"> i </span> 
+						<span class="edit-btn btn" title="edit"> e </span> 
 						<span class="remove-btn btn" title="remove"> x </span>
-				</div>
+					</div>
+				
+			</div>
 			 	
 			<div id="table-list" class="table-list">
 
 
-				<div class="row-list  ">			 
+				<div class="row-list">		
+					<span class="date-line"> 2018-07-25	</span>		 
 						<span class="text-line"> retina display it is a good display </span>
+						<div class="btn-panel">
 						<span class="ready-btn btn" title="ready"> v </span> 
-						<span class="edit-btn btn" title="edit"> i </span> 
+						<span class="edit-btn btn" title="edit"> e </span> 
 						<span class="remove-btn btn" title="remove"> x </span>
+					</div>
 				</div>
 
 				<div class="row-list ">			 
+						<span class="date-line"> 2018-07-25	</span>	
 						<span class="text-line"> gggggggsdfgsgdbsdgbs </span>
+						<div class="btn-panel">
 						<span class="ready-btn btn" title="ready"> v </span> 
-						<span class="edit-btn btn" title="edit"> i </span> 
+						<span class="edit-btn btn" title="edit"> e </span> 
 						<span class="remove-btn btn" title="remove"> x </span>
+					</div>
 				</div>
 
 			</div>

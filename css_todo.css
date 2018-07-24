@@ -6,11 +6,15 @@
 }
 
 .main-title{
+	color: green;
 	text-decoration: underline;
 }
 
 .table-list{
-	width: 500px;
+	border-top: 1px solid green;
+	margin-top: 10px;
+	padding-top: 20px;
+	min-width: 500px;
 }
 
 .todo-section{
@@ -22,21 +26,46 @@
 
 .text-line{
 	padding: 2px;
+	cursor: pointer;
+	max-width: 500px;
+	overflow: hidden;
+}
+
+.date-line{
+	padding: 2px;
+	margin-right: 7px;
+}
+
+.inner-field{
+	padding: 3px 5px 2px;
 }
 
 .btn{
 	cursor: pointer;
-	padding: 2px 7px;
+	padding: 3px 7px 4px;
 	margin-left: 10px;
 	border: 1px solid #f3f1f1;
+	border-radius: 3px;
+	box-shadow: 1px 1px 1px 1px orange;
+	height: 15px;
 }
 
-.hidden{
+.btn:hover{
+	color: brown;
+	box-shadow: 1px 1px 1px 1px yellow;
+}
+
+.btn:active{
+	color: red;
+}
+
+.row-list.hidden{
 	display: none;
 }
 
 .row-list{
-	
+	display: flex;
+	justify-content: space-between;
 	height:  40px;
 }
 
