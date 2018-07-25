@@ -1,13 +1,15 @@
 document.addEventListener('DOMContentLoaded', () =>{
 
 	const addBtn = document.getElementById('add-btn');
+	const filtrBtn = document.getElementById('filtr-btn');
 	const inner = document.getElementById('inner-field');
 	const date_field = document.getElementById('date-line');
 	const display = document.getElementById('table-list');
+	const filterField = document.getElementById('filtr-btn-checkbox');
 
 	const todoListArr = [];
-	let infoFromInner; 
-	let infoDate;
+	let infoFromInput = {}; 
+ 
 	const rowExampl = document.querySelector('.row-list');
 
 	let z = localStorage;
@@ -15,40 +17,75 @@ document.addEventListener('DOMContentLoaded', () =>{
 
 	function insertData(){
 		Object.keys(localStorage).forEach( prop =>  todoListArr.push(JSON.parse(localStorage[prop])));
-		// todoListArr.forEach( prop =>   )
-		// localStorage.length !== 0 ? console.log(JSON.parse(z)) : '';
 		fillTodoDisplay(todoListArr);
 		console.log(todoListArr);
 	}
 
+	function fillTodoDisplay(todoListArr){ todoListArr.forEach( prop => fillRow(prop)) }
+
 	insertData();
 
 	console.log(localStorage);
-	
+
+	function editStorage(id, key, val){
+		const objObj = JSON.parse(localStorage.getItem(id));
+		objObj[key] = val;
+		localStorage.setItem(id, JSON.stringify(objObj));
+	}
+	 		
+	filterField.addEventListener('change', hideReady);
+		// filtr-btn-checkbox
+
+	function hideReady(){			
+		console.log();
+		const rowLists = display.querySelectorAll('.row-list');
+		Object.keys(rowLists).forEach( prop => {filterField.checked && rowLists[prop].getAttribute('data-ready') === 'true' ? rowLists[prop].classList.add('hidden') 
+			: !filterField.checked  ? rowLists[prop].classList.remove('hidden') : ''});
+	}
+ 
+
 	function Actions(elem) {
 
 		let curRow;
 		let infoForEdit;
+		let dateForEdit;
 
 	    this.remo = function() {
-	       	console.log('удаляю');
+	       
 	       	curRow.remove();
+	       	localStorage.removeItem(curRow.getAttribute('data-id'));
+	       	console.log('удаляю ' + curRow.getAttribute('data-id'));
 	    };
 
 	    this.read = function() {
-	       	console.log('выполнено');
-	       	const clList = curRow.querySelector('.text-line').classList;
-	       	clList.forEach(item => item === 'ready-class' ? clList.remove('ready-class') : clList.add('ready-class'));
+	       	console.log('done '+ curRow.getAttribute('data-id') );
+	       	const clList = curRow.querySelector('.info-field').classList;
+	       	let curId = curRow.getAttribute('data-id');
+
+	       	clList.forEach(item => {
+	       		if (item === 'ready-class') {
+	       			clList.remove('ready-class');
+	       			curRow.setAttribute('data-ready', false);
+	       			editStorage(curId, 'ready', false);     			  		
+	       		}else{
+	       			clList.add('ready-class');
+	       			curRow.setAttribute('data-ready', true);
+	       			editStorage(curId, 'ready', true);	       			 	       			
+	       		}
+	       	});
 	    };
 
 	    this.text = this.read;
 
 	    this.edit = function(e) {
 	       	console.log('редактирую');
+	       	dateForEdit = curRow.querySelector('.date-line').innerHTML;
 	       	infoForEdit = curRow.querySelector('.text-line').innerHTML;
 			curRow.querySelector('.text-line').innerHTML = `<input class="input-edit-todo" value="${infoForEdit}">  </input>`;
+			curRow.querySelector('.date-line').innerHTML = `<input class="input-date-todo" type="date" value="${dateForEdit}">  </input>`;
 			display.removeEventListener('click', commadRun);
-			curRow.querySelector('.edit-btn').addEventListener('click', saveAndExit);
+			curRow.querySelector('.edit-btn').addEventListener('click', saveAndExit);  // ?????
+			//curRow.querySelector('.edit-btn').addEventListener('click', () => window.dispatchEvent(new Event('keydown')));  
 			window.addEventListener('keydown', saveChange);
 	   	};
 
@@ -68,14 +105,24 @@ document.addEventListener('DOMContentLoaded', () =>{
 		}			
 
 		function saveAndExit(){
-			curRow.querySelector('.text-line').innerHTML = curRow.querySelector('.input-edit-todo').value;
-			curRow.querySelector('.edit-btn').removeEventListener('click', saveAndExit);
-			window.removeEventListener('keydown', saveChange);
-			display.addEventListener('click', commadRun);
+			let textVal = curRow.querySelector('.input-edit-todo').value;
+			let dateVal = curRow.querySelector('.input-date-todo').value;
+			console.log(dateVal);
+
+			if (textVal && textVal.trim() !== '' && dateVal !== ''){
+				curRow.querySelector('.text-line').innerHTML = 	textVal;		
+				curRow.querySelector('.date-line').innerHTML = 	dateVal;		
+				editStorage(curRow.getAttribute('data-id'), 'text', textVal);
+				editStorage(curRow.getAttribute('data-id'), 'deadLine', dateVal);				
+				curRow.querySelector('.edit-btn').removeEventListener('click', saveAndExit);
+				window.removeEventListener('keydown', saveChange);
+				display.addEventListener('click', commadRun);
+			}				
 		}
 
 		function exitWithoutSave(){
 			curRow.querySelector('.text-line').innerHTML = infoForEdit;
+			curRow.querySelector('.date-line').innerHTML = dateForEdit;
 			window.removeEventListener('keydown', saveChange);
 			curRow.querySelector('.edit-btn').removeEventListener('click', saveAndExit);
 			display.addEventListener('click', commadRun);
@@ -85,42 +132,38 @@ document.addEventListener('DOMContentLoaded', () =>{
 
     new Actions();
 
-
-
 	addBtn.addEventListener('click', ()=>{
 
-		infoFromInner = inner.value;
-		infoDate = date_field.value;	 
+		infoFromInput.text = inner.value;
+		infoFromInput.deadLine = date_field.value;
+		 
+		if (infoFromInput.text && infoFromInput.text.trim() !== ''  && infoFromInput.deadLine !== ''){			
+			let id = +new Date(); 		
+			infoFromInput.id = id;
+			infoFromInput.ready = false;
 
-		if (infoFromInner && infoFromInner.trim() !== ''){
-			// fillTodoDisplay();
-			let newRow = rowExampl.cloneNode(true);
-			newRow.classList.remove('hidden');
-			newRow.querySelector('.text-line').innerHTML = infoFromInner;
-			newRow.querySelector('.date-line').innerHTML = infoDate
-			display.insertBefore(newRow , display.firstChild);			
+			fillRow(infoFromInput);
+
 			inner.value = '';
-
-			let id = localStorage.length+1; // сделать нормальный id 
-			localStorage.setItem(id, JSON.stringify({id: id, text: infoFromInner, ready: true, deadLine:infoDate, createDate: +new Date()}));
-
+			const tempObj = {id: id, text: infoFromInput.text, ready: false, deadLine:infoFromInput.deadLine}
+			localStorage.setItem(id, JSON.stringify(tempObj));	
 		}
 
 	});
 
-	function fillTodoDisplay(todoListArr){
+	function fillRow(data){
 
-		todoListArr.forEach( prop => {
-
-			let newRow = rowExampl.cloneNode(true);
-			newRow.classList.remove('hidden');
-			newRow.querySelector('.text-line').innerHTML = prop.text;
-			newRow.querySelector('.date-line').innerHTML = prop.deadLine;
-			display.insertBefore(newRow , display.firstChild);
-
-		});
-	
-
+		let newRow = rowExampl.cloneNode(true);	
+		newRow.classList.remove('hidden');
+		newRow.setAttribute('data-id', data.id);
+		newRow.setAttribute('data-ready', data.ready);
+  
+		data.ready ? newRow.querySelector('.info-field').classList.add('ready-class') : '';	 
+		 
+		newRow.querySelector('.text-line').innerHTML = data.text;
+		newRow.querySelector('.date-line').innerHTML = data.deadLine;
+		display.insertBefore(newRow , display.firstChild);			
+		
 	}
 
 	inner.addEventListener('focus', () => window.addEventListener('keypress', onKeyPress));
@@ -131,6 +174,19 @@ document.addEventListener('DOMContentLoaded', () =>{
 	}
 
 });
+
+
+
+		// todoListArr.push(tempObj);
+		// 	console.log(todoListArr);
+
+// let newRow = rowExampl.cloneNode(true);
+			// newRow.classList.remove('hidden');
+			// newRow.querySelector('.text-line').innerHTML = prop.text;
+			// newRow.querySelector('.date-line').innerHTML = prop.deadLine;
+			// display.insertBefore(newRow , display.firstChild);
+
+
 
 
 

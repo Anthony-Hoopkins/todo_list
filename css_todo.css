@@ -59,7 +59,11 @@
 	color: red;
 }
 
-.row-list.hidden{
+.filtr-area{
+	margin-top: 30px;
+}
+
+.row-list.hidden, .hidden{
 	display: none;
 }
 
