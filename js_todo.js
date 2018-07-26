@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () =>{
 
 	const addBtn = document.getElementById('add-btn');
-	const filtrBtn = document.querySelector('.filtr-btn');
+	const filterBtn = document.querySelector('.filtr-btn');
 	const basketBtn = document.getElementById('basket-btn');
 	const clearBasketBtn = document.getElementById('clear-basket-btn');
 	const inner = document.getElementById('inner-field');
@@ -11,10 +11,10 @@ document.addEventListener('DOMContentLoaded', () =>{
 	const rowExampl = document.querySelector('.row-list');	
 
 	let todoListArr = [];
-	let todoArrBasket = [];
 	let infoFromInput = {}; 
 
 	function init(){
+		localStorage.getItem('todoStorage') ? '' : localStorage.setItem('todoStorage', JSON.stringify([]));
 		localStorage.getItem('basket') ? '' : localStorage.setItem('basket', JSON.stringify([]));
 	}
 	init();
@@ -33,32 +33,38 @@ document.addEventListener('DOMContentLoaded', () =>{
 	basketBtn.addEventListener('click', showBasket);
 
 	function showBasket(){
+
 		basketBtn.removeEventListener('click', showBasket);
 		basketBtn.addEventListener('click', hideBasket);
 		clearBasketBtn.classList.remove('hidden');
-		filtrBtn.classList.add('hidden');
+		filterBtn.classList.add('hidden');
 
 		console.log('show');
 		display.innerHTML = '';
-		fillTodoDisplay(JSON.parse(localStorage.getItem('basket'))); // хочу заполнить строчку, но чуть подругому - без btn  панели.
+		fillTodoDisplay(JSON.parse(localStorage.getItem('basket'))); 
 		display.querySelectorAll('.btn-panel').forEach(prop => prop.innerHTML = '');
+		basketBtn.innerHTML = 'X';
+		basketBtn.classList.add('tab');
+
 	}	
 
 	function hideBasket(){
 		basketBtn.removeEventListener('click', hideBasket);
 		basketBtn.addEventListener('click', showBasket);
 		clearBasketBtn.classList.add('hidden');
-		filtrBtn.classList.remove('hidden');
+		filterBtn.classList.remove('hidden');
 
 		console.log('Hide');
 		display.innerHTML = '';
 		insertData();
+		basketBtn.innerHTML = 'History';
+		basketBtn.classList.remove('tab');
 	}
 
 	function insertData(){
 		todoListArr = [];
-		Object.keys(localStorage).forEach( prop => !isNaN(prop) && localStorage[prop]  ? todoListArr.push(JSON.parse(localStorage[prop])) : console.log('basket'));
-		// Object.keys(localStorage).forEach( prop =>  todoListArr.push(JSON.parse(localStorage[prop])));
+		todoListArr = JSON.parse(localStorage.getItem('todoStorage'));
+// Object.keys(localStorage).forEach( prop => !isNaN(prop) && localStorage[prop]  ? todoListArr.push(JSON.parse(localStorage[prop])) : console.log('basket')); v 0.0.5
 		fillTodoDisplay(todoListArr);
 		console.log(todoListArr);
 	}
@@ -81,10 +87,8 @@ document.addEventListener('DOMContentLoaded', () =>{
 		
 	}
 
-	function editStorage(id, key, val){
-		const objObj = JSON.parse(localStorage.getItem(id));
-		objObj[key] = val;
-		localStorage.setItem(id, JSON.stringify(objObj));
+	function editStorage(id, key, val){		
+		todoStorageChange(val, id, 1, key);
 	}
 
 	function hideReady(){			
@@ -105,32 +109,66 @@ document.addEventListener('DOMContentLoaded', () =>{
 			let id = +new Date(); 		
 			infoFromInput.id = id;
 			infoFromInput.ready = false;
-
 			fillRow(infoFromInput);
-
 			inner.value = '';
-			const tempObj = {id: id, text: infoFromInput.text, ready: false, deadLine:infoFromInput.deadLine}
-			localStorage.setItem(id, JSON.stringify(tempObj));	
+			const tempObj = {id: id, text: infoFromInput.text, ready: false, deadLine:infoFromInput.deadLine};
+			// localStorage.setItem(id, JSON.stringify(tempObj));	v 0.0.5
+			todoStorageChange(tempObj);
 		}
 
 	});
 
-	function Actions(elem) {
+	function todoStorageChange(tempObj, id=0, index=0, key){
+		// localStorage.setItem(id, JSON.stringify(tempObj));	
+		const arrOfIndex = [
+			function add(){
+				storageArr.push(tempObj);
+				console.log('index 0');
+			},
+			function edit(){
+				console.log('index 1');
+				storageArr.forEach( (prop,i) => prop.id == id ? storageArr[i][key] = tempObj  : '');
+			},
+			function remove(){
+				console.log('index 2');
+				let todoArrBasket = [];			
+				let itemRemove;
+				storageArr.forEach( (prop,i) => prop.id == id ? itemRemove = storageArr.splice(i,1)[0] : '');
+				todoArrBasket = JSON.parse(localStorage.getItem('basket'));
+		       	todoArrBasket.push(itemRemove);
+		       	localStorage.setItem('basket',  JSON.stringify(todoArrBasket));
+		       	console.log('удаляю ' + itemRemove);
+
+			},function edit(){
+				console.log('index 3');
+			}
+		];
+
+		const storageArr = JSON.parse(localStorage.getItem('todoStorage'));
+		arrOfIndex[index]();
+		localStorage.setItem('todoStorage', JSON.stringify(storageArr));
+		console.log(storageArr);
+		
+	}
+
+	function Actions() {
 
 		let curRow;
 		let infoForEdit;
 		let dateForEdit;
 
+		function commadRun(e){
+			const commandName = e.target.className.slice(0,4);	
+			curRow = e.target.closest('.row-list');     
+		    self[commandName] ? self[commandName]() : '';		     
+	    };
+
 	    this.remo = function() {
 
-	       	const id = curRow.getAttribute('data-id');	       	
-	       	const itemRemove = JSON.parse(localStorage.getItem(id));
-	       	todoArrBasket = JSON.parse(localStorage.getItem('basket'));
-	       	todoArrBasket.push(itemRemove);
-	       	localStorage.setItem('basket',  JSON.stringify(todoArrBasket));
+	       	const id = curRow.getAttribute('data-id');
 	       	curRow.remove();
-	       	localStorage.removeItem(id);
-	       	console.log('удаляю ' +  id);
+	       	// localStorage.removeItem(id);   v 0.0.5
+	       	todoStorageChange('itemRemove', id, 2);
 	    };
 
 	    this.read = function() {
@@ -154,11 +192,8 @@ document.addEventListener('DOMContentLoaded', () =>{
 	    this.text = this.read;
 
 	    this.edit = function(e) {
-	       	console.log('редактирую');
-	       	dateForEdit = curRow.querySelector('.date-line').innerHTML;
-	       	infoForEdit = curRow.querySelector('.text-line').innerHTML;
-			curRow.querySelector('.text-line').innerHTML = `<input class="input-edit-todo" value="${infoForEdit}">  </input>`;
-			curRow.querySelector('.date-line').innerHTML = `<input class="input-date-todo" type="date" value="${dateForEdit}">  </input>`;			
+	       	console.log('редактирую');	
+	       	readyEdit();    			
 			openEdit();					
 	   	};
 
@@ -181,13 +216,21 @@ document.addEventListener('DOMContentLoaded', () =>{
 
 		let self = this;
 
-		display.addEventListener('click', commadRun);
+		function readyEdit(){
+			dateForEdit = curRow.querySelector('.date-line').innerHTML;
+	       	infoForEdit = curRow.querySelector('.text-line').innerHTML;
+			curRow.querySelector('.text-line').innerHTML = `<input class="input-edit-todo" value="${infoForEdit}">  </input>`;
+			curRow.querySelector('.date-line').innerHTML = `<input class="input-date-todo" type="date" value="${dateForEdit}">  </input>`;	
+		}
 
-		function commadRun(e){
-			const commandName = e.target.className.slice(0,4);	
-			curRow = e.target.closest('.row-list');     
-		    self[commandName] ? self[commandName]() : '';		     
-	    };
+		display.addEventListener('click', commadRun);
+		// display.addEventListener('contextmenu', editFunction);
+
+		function editFunction(){
+			console.log('klajsbdjlhb');
+			readyEdit(); 			
+			openEdit();
+		}
 
 	    function saveChange(e){
 			e.keyCode === 13 ? saveAndExit() : '';

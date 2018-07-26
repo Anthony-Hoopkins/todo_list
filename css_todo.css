@@ -14,7 +14,7 @@
 	border-top: 1px solid green;
 	margin-top: 10px;
 	padding-top: 20px;
-	min-width: 500px;
+	min-width: 700px;
 }
 
 .todo-section{
@@ -27,8 +27,11 @@
 .text-line{
 	padding: 2px;
 	cursor: pointer;
-	max-width: 500px;
 	overflow: hidden;
+}
+
+.text-line input{
+	min-width: 400px;
 }
 
 .date-line{
@@ -50,6 +53,7 @@
 	height: 15px;
 }
 
+
 .btn:hover{
 	color: brown;
 	box-shadow: 1px 1px 1px 1px yellow;
@@ -57,6 +61,64 @@
 
 .btn:active{
 	color: red;
+}
+
+.style-btn{
+	display: inline-block;
+	}
+
+.style-btn:hover{
+	color: red;
+}
+
+.btn-panel .style-btn{	 
+	cursor: pointer;
+	padding: 3px 7px 4px;
+	height: 15px;
+	width: 15px;
+	background: url('icons-material-design-min.jpg');
+}
+
+.btn-panel .edit-btn{
+	background-position: 288px 133px; 
+}
+
+.btn-panel .remove-btn{
+	background-position: 122px 133px; 
+}
+
+.btn-panel .save-btn{
+	background-position: 247px 87px;
+}
+
+.btn-panel .style-btn:hover{	 
+	background: url('icons-material-min-hover.png');
+}
+
+.btn-panel .edit-btn:hover{
+	background-position: 288px 133px; 
+}
+
+.btn-panel .remove-btn:hover{
+	background-position: 122px 133px; 
+}
+
+.btn-panel .save-btn:hover{
+	background-position: 247px 87px;
+}
+
+.tab{
+	padding: 3px 17px 28px;	 
+	margin-left: 10px;
+	border: 0;
+	border: 1px solid grey;
+	border-bottom: 3px solid #fff; 
+	box-shadow: none;
+	height: 15px;
+}
+
+.tab:hover{
+	box-shadow: none;
 }
 
 .filtr-area{
@@ -70,7 +132,13 @@
 .row-list{
 	display: flex;
 	justify-content: space-between;
-	height:  40px;
+	align-items: center;
+	height:  30px;
+	padding: 5px;
+}
+
+.row-list:nth-child(odd){
+	background-color: #f7ede1;
 }
 
 .ready-class{
