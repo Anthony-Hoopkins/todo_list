@@ -76,36 +76,58 @@
 	padding: 3px 7px 4px;
 	height: 15px;
 	width: 15px;
-	background: url('icons-material-design-min.jpg');
+	background: url('Full_sprite.png');
 }
 
-.btn-panel .edit-btn{
-	background-position: 288px 133px; 
+.row-list .edit-btn{
+	background-position: 288px 976px;
 }
 
-.btn-panel .remove-btn{
-	background-position: 122px 133px; 
+.row-list .edit-btn:hover{
+	background-position: 288px 708px;
 }
 
-.btn-panel .save-btn{
-	background-position: 247px 87px;
+.row-list:nth-child(odd) .edit-btn{
+	background-position: 288px 437px;
 }
 
-.btn-panel .style-btn:hover{	 
-	background: url('icons-material-min-hover.png');
+.row-list:nth-child(odd) .edit-btn:hover{ 
+	background-position: 288px 156px;
 }
 
-.btn-panel .edit-btn:hover{
-	background-position: 288px 133px; 
+.row-list .remove-btn{
+	background-position: 122px 976px; 
 }
 
-.btn-panel .remove-btn:hover{
-	background-position: 122px 133px; 
+.row-list .remove-btn:hover{
+	background-position: 122px 708px; 
 }
 
-.btn-panel .save-btn:hover{
-	background-position: 247px 87px;
+.row-list:nth-child(odd) .remove-btn{
+	background-position: 122px 437px; 
 }
+
+.row-list:nth-child(odd) .remove-btn:hover{
+	background-position: 122px 156px; 
+}
+
+.row-list .save-btn{
+	background-position: 247px 931px;
+}
+
+.row-list .save-btn:hover{
+	background-position: 247px 663px;
+}
+
+.row-list:nth-child(odd) .save-btn{
+	background-position: 247px 392px;
+}
+
+.row-list:nth-child(odd) .save-btn:hover{
+	background-position: 247px 111px;
+}
+
+
 
 .tab{
 	padding: 3px 17px 28px;	 

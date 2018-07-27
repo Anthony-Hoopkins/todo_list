@@ -28,38 +28,7 @@ document.addEventListener('DOMContentLoaded', () =>{
 			localStorage.removeItem('basket');
 			window.location.reload();
 		}
-	}
-
-	basketBtn.addEventListener('click', showBasket);
-
-	function showBasket(){
-
-		basketBtn.removeEventListener('click', showBasket);
-		basketBtn.addEventListener('click', hideBasket);
-		clearBasketBtn.classList.remove('hidden');
-		filterBtn.classList.add('hidden');
-
-		console.log('show');
-		display.innerHTML = '';
-		fillTodoDisplay(JSON.parse(localStorage.getItem('basket'))); 
-		display.querySelectorAll('.btn-panel').forEach(prop => prop.innerHTML = '');
-		basketBtn.innerHTML = 'X';
-		basketBtn.classList.add('tab');
-
 	}	
-
-	function hideBasket(){
-		basketBtn.removeEventListener('click', hideBasket);
-		basketBtn.addEventListener('click', showBasket);
-		clearBasketBtn.classList.add('hidden');
-		filterBtn.classList.remove('hidden');
-
-		console.log('Hide');
-		display.innerHTML = '';
-		insertData();
-		basketBtn.innerHTML = 'History';
-		basketBtn.classList.remove('tab');
-	}
 
 	function insertData(){
 		todoListArr = [];
@@ -175,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () =>{
 	       	console.log('done '+ curRow.getAttribute('data-id') );
 	       	const clList = curRow.querySelector('.info-field').classList;
 	       	let curId = curRow.getAttribute('data-id');
-
+	     
 	       	clList.forEach(item => {
 	       		if (item === 'ready-class') {
 	       			clList.remove('ready-class');
@@ -205,6 +174,13 @@ document.addEventListener('DOMContentLoaded', () =>{
 			window.addEventListener('keydown', saveChange);
 	   	}
 
+	   	function readyEdit(){
+			dateForEdit = curRow.querySelector('.date-line').innerHTML;
+	       	infoForEdit = curRow.querySelector('.text-line').innerHTML;
+			curRow.querySelector('.text-line').innerHTML = `<input class="input-edit-todo" value="${infoForEdit}">  </input>`;
+			curRow.querySelector('.date-line').innerHTML = `<input class="input-date-todo" type="date" value="${dateForEdit}">  </input>`;	
+		}
+
 	   	function closeEdit(){
 	   		curRow.querySelector('.edit-btn').removeEventListener('click', saveAndExit);
 			display.addEventListener('click', commadRun);
@@ -216,21 +192,7 @@ document.addEventListener('DOMContentLoaded', () =>{
 
 		let self = this;
 
-		function readyEdit(){
-			dateForEdit = curRow.querySelector('.date-line').innerHTML;
-	       	infoForEdit = curRow.querySelector('.text-line').innerHTML;
-			curRow.querySelector('.text-line').innerHTML = `<input class="input-edit-todo" value="${infoForEdit}">  </input>`;
-			curRow.querySelector('.date-line').innerHTML = `<input class="input-date-todo" type="date" value="${dateForEdit}">  </input>`;	
-		}
-
-		display.addEventListener('click', commadRun);
-		// display.addEventListener('contextmenu', editFunction);
-
-		function editFunction(){
-			console.log('klajsbdjlhb');
-			readyEdit(); 			
-			openEdit();
-		}
+		display.addEventListener('click', commadRun);		
 
 	    function saveChange(e){
 			e.keyCode === 13 ? saveAndExit() : '';
@@ -254,7 +216,66 @@ document.addEventListener('DOMContentLoaded', () =>{
 			curRow.querySelector('.text-line').innerHTML = infoForEdit;
 			curRow.querySelector('.date-line').innerHTML = dateForEdit;
 			closeEdit();
-		}		
+		}	
+
+		basketBtn.addEventListener('click', showBasket);
+
+		function showBasket(){
+			basketBtn.removeEventListener('click', showBasket);
+			basketBtn.addEventListener('click', hideBasket);
+			display.removeEventListener('mousedown', mousedownStart);
+			display.removeEventListener('mouseup', mouseupStart);
+			clearBasketBtn.classList.remove('hidden');
+			filterBtn.classList.add('hidden');
+
+			console.log('show');
+			display.innerHTML = '';
+			fillTodoDisplay(JSON.parse(localStorage.getItem('basket'))); 
+			display.querySelectorAll('.btn-panel').forEach(prop => prop.innerHTML = '');
+			basketBtn.innerHTML = 'X';
+			basketBtn.classList.add('tab');
+		}	
+
+		function hideBasket(){
+			basketBtn.removeEventListener('click', hideBasket);
+			basketBtn.addEventListener('click', showBasket);
+			display.addEventListener('mousedown', mousedownStart);
+			display.addEventListener('mouseup', mouseupStart);
+			clearBasketBtn.classList.add('hidden');
+			filterBtn.classList.remove('hidden');
+
+			console.log('Hide');
+			display.innerHTML = '';
+			insertData();
+			basketBtn.innerHTML = 'History';
+			basketBtn.classList.remove('tab');
+		}	
+
+			// - work with sleeping lmc
+			let mousedown = false;
+			let mousedown_timer = '';			 
+
+			display.addEventListener('mousedown', mousedownStart);
+			display.addEventListener('mouseup', mouseupStart);
+
+			function mousedownStart(e){
+				mousedown = true;
+			    console.log('mousedown...');
+			    mousedown_timer = setTimeout(() => {
+			        if(mousedown) {
+			            console.log('sleeping lmc');
+			            curRow = e.target.closest('.row-list'); 
+			            readyEdit();    			
+						openEdit();		
+			        }
+			    }, 900);
+			}		
+
+			function mouseupStart(){
+				mousedown = false;
+			    clearTimeout(mousedown_timer);
+			    console.log('aborted');
+			}	
 
     };	
 
@@ -268,6 +289,30 @@ document.addEventListener('DOMContentLoaded', () =>{
 	}
 
 });
+
+
+
+			  	// display.removeEventListener('mousedown', editSleep);	
+	       	// display.addEventListener('mousedown', editSleep);
+
+			// function editSleep(e){
+			// 	setTimeout(() => hii(), 900);	
+			// }
+
+			// function hii(){
+			//     // Code goes here.
+			//     	console.log('HIHIHIHIHIH');
+			// }
+			// // display.addEventListener('contextmenu', editFunction);
+
+			// function editFunction(){
+			// 	console.log('klajsbdjlhb');
+			// 	readyEdit(); 			
+			// 	openEdit();
+			// }
+
+
+
 
 
 
