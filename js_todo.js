@@ -14,8 +14,12 @@ document.addEventListener('DOMContentLoaded', () =>{
 	let infoFromInput = {}; 
 
 	function init(){
-		localStorage.getItem('todoStorage') ? '' : localStorage.setItem('todoStorage', JSON.stringify([]));
-		localStorage.getItem('basket') ? '' : localStorage.setItem('basket', JSON.stringify([]));
+		if (!localStorage.getItem('todoStorage')) {
+		  	localStorage.setItem('todoStorage', JSON.stringify([]));
+		}
+		if (!localStorage.getItem('basket')) {
+		 	localStorage.setItem('basket', JSON.stringify([]));
+		}
 	}
 	init();
 	
@@ -30,14 +34,12 @@ document.addEventListener('DOMContentLoaded', () =>{
 		}
 	}	
 
-	function insertData(){
+	function loadDataFromStore(){
 		todoListArr = [];
 		todoListArr = JSON.parse(localStorage.getItem('todoStorage'));
-// Object.keys(localStorage).forEach( prop => !isNaN(prop) && localStorage[prop]  ? todoListArr.push(JSON.parse(localStorage[prop])) : console.log('basket')); v 0.0.5
 		fillTodoDisplay(todoListArr);
-		console.log(todoListArr);
 	}
-	insertData();
+	loadDataFromStore();
 
 	function fillTodoDisplay(todoListArr){ todoListArr.forEach( prop => fillRow(prop)) }
 
@@ -48,8 +50,9 @@ document.addEventListener('DOMContentLoaded', () =>{
 		newRow.setAttribute('data-id', data.id);
 		newRow.setAttribute('data-ready', data.ready);
   
-		data.ready ? newRow.querySelector('.info-field').classList.add('ready-class') : '';
-		 
+		if (data.ready) {
+			newRow.querySelector('.info-field').classList.add('ready-class');
+		}
 		newRow.querySelector('.text-line').innerHTML = data.text;
 		newRow.querySelector('.date-line').innerHTML = data.deadLine;
 		display.insertBefore(newRow , display.firstChild);		
@@ -57,14 +60,18 @@ document.addEventListener('DOMContentLoaded', () =>{
 	}
 
 	function editStorage(id, key, val){		
-		todoStorageChange(val, id, 1, key);
+		todoStorageChange(val, id, 'edit', key);
 	}
 
 	function hideReady(){			
-		console.log();
 		const rowLists = display.querySelectorAll('.row-list');
-		Object.keys(rowLists).forEach( prop => {filterField.checked && rowLists[prop].getAttribute('data-ready') === 'true' ? rowLists[prop].classList.add('hidden') 
-			: !filterField.checked  ? rowLists[prop].classList.remove('hidden') : ''});
+		Object.keys(rowLists).forEach( prop => {
+			if (filterField.checked && rowLists[prop].getAttribute('data-ready') === 'true'){
+				rowLists[prop].classList.add('hidden'); 
+			}else if (!filterField.checked){
+				rowLists[prop].classList.remove('hidden');
+			}
+		});
 	}
  
 	filterField.addEventListener('change', hideReady);
@@ -81,42 +88,43 @@ document.addEventListener('DOMContentLoaded', () =>{
 			fillRow(infoFromInput);
 			inner.value = '';
 			const tempObj = {id: id, text: infoFromInput.text, ready: false, deadLine:infoFromInput.deadLine};
-			// localStorage.setItem(id, JSON.stringify(tempObj));	v 0.0.5
 			todoStorageChange(tempObj);
 		}
 
 	});
 
-	function todoStorageChange(tempObj, id=0, index=0, key){
-		// localStorage.setItem(id, JSON.stringify(tempObj));	
-		const arrOfIndex = [
-			function add(){
+	function todoStorageChange(tempObj, id=0, index='add', key){
+
+		const objOfFunc = {
+			add: function add(){
 				storageArr.push(tempObj);
-				console.log('index 0');
 			},
-			function edit(){
-				console.log('index 1');
-				storageArr.forEach( (prop,i) => prop.id == id ? storageArr[i][key] = tempObj  : '');
+			edit: function edit(){
+				storageArr.forEach( (prop,i) => {
+					if (prop.id == id){
+						storageArr[i][key] = tempObj
+					}
+				});
 			},
-			function remove(){
-				console.log('index 2');
+			remove: function remove(){
 				let todoArrBasket = [];			
 				let itemRemove;
-				storageArr.forEach( (prop,i) => prop.id == id ? itemRemove = storageArr.splice(i,1)[0] : '');
+				storageArr.forEach( (prop,i) => {
+					if (prop.id == id){
+						itemRemove = storageArr.splice(i,1)[0];
+					}
+				});
 				todoArrBasket = JSON.parse(localStorage.getItem('basket'));
 		       	todoArrBasket.push(itemRemove);
 		       	localStorage.setItem('basket',  JSON.stringify(todoArrBasket));
-		       	console.log('удаляю ' + itemRemove);
-
-			},function edit(){
-				console.log('index 3');
-			}
-		];
+			} 
+		};
 
 		const storageArr = JSON.parse(localStorage.getItem('todoStorage'));
-		arrOfIndex[index]();
+
+		objOfFunc[index]();
+
 		localStorage.setItem('todoStorage', JSON.stringify(storageArr));
-		console.log(storageArr);
 		
 	}
 
@@ -129,19 +137,20 @@ document.addEventListener('DOMContentLoaded', () =>{
 		function commadRun(e){
 			const commandName = e.target.className.slice(0,4);	
 			curRow = e.target.closest('.row-list');     
-		    self[commandName] ? self[commandName]() : '';		     
+		    if (self[commandName]){
+		    	 self[commandName]();
+		    };		     
 	    };
 
 	    this.remo = function() {
 
 	       	const id = curRow.getAttribute('data-id');
 	       	curRow.remove();
-	       	// localStorage.removeItem(id);   v 0.0.5
-	       	todoStorageChange('itemRemove', id, 2);
+	       	todoStorageChange('itemRemove', id, 'remove');
 	    };
 
 	    this.read = function() {
-	       	console.log('done '+ curRow.getAttribute('data-id') );
+
 	       	const clList = curRow.querySelector('.info-field').classList;
 	       	let curId = curRow.getAttribute('data-id');
 	     
@@ -156,12 +165,12 @@ document.addEventListener('DOMContentLoaded', () =>{
 	       			editStorage(curId, 'ready', true);	       			 	       			
 	       		}
 	       	});
+
 	    };
 
 	    this.text = this.read;
 
 	    this.edit = function(e) {
-	       	console.log('редактирую');	
 	       	readyEdit();    			
 			openEdit();					
 	   	};
@@ -195,8 +204,12 @@ document.addEventListener('DOMContentLoaded', () =>{
 		display.addEventListener('click', commadRun);		
 
 	    function saveChange(e){
-			e.keyCode === 13 ? saveAndExit() : '';
-			e.keyCode === 27 ? exitWithoutSave() : '';
+			if (e.keyCode === 13){ 
+			 	saveAndExit();
+			}
+			if (e.keyCode === 27){ 
+				exitWithoutSave();
+			}
 		}			
 
 		function saveAndExit(){
@@ -228,7 +241,6 @@ document.addEventListener('DOMContentLoaded', () =>{
 			clearBasketBtn.classList.remove('hidden');
 			filterBtn.classList.add('hidden');
 
-			console.log('show');
 			display.innerHTML = '';
 			fillTodoDisplay(JSON.parse(localStorage.getItem('basket'))); 
 			display.querySelectorAll('.btn-panel').forEach(prop => prop.innerHTML = '');
@@ -244,9 +256,8 @@ document.addEventListener('DOMContentLoaded', () =>{
 			clearBasketBtn.classList.add('hidden');
 			filterBtn.classList.remove('hidden');
 
-			console.log('Hide');
 			display.innerHTML = '';
-			insertData();
+			loadDataFromStore();
 			basketBtn.innerHTML = 'History';
 			basketBtn.classList.remove('tab');
 		}	
@@ -260,10 +271,8 @@ document.addEventListener('DOMContentLoaded', () =>{
 
 			function mousedownStart(e){
 				mousedown = true;
-			    console.log('mousedown...');
 			    mousedown_timer = setTimeout(() => {
 			        if(mousedown) {
-			            console.log('sleeping lmc');
 			            curRow = e.target.closest('.row-list'); 
 			            readyEdit();    			
 						openEdit();		
@@ -274,7 +283,6 @@ document.addEventListener('DOMContentLoaded', () =>{
 			function mouseupStart(){
 				mousedown = false;
 			    clearTimeout(mousedown_timer);
-			    console.log('aborted');
 			}	
 
     };	
@@ -285,12 +293,25 @@ document.addEventListener('DOMContentLoaded', () =>{
 	inner.addEventListener('blur', () => window.removeEventListener('keypress', onKeyPress));	
 
 	function onKeyPress(e){
-		e.keyCode === 13 ? addBtn.dispatchEvent(new Event('click')) : '';
+		if (e.keyCode === 13) {
+			addBtn.dispatchEvent(new Event('click'));
+		}
 	}
 
 });
 
 
+
+
+
+
+
+
+
+// Object.keys(localStorage).forEach( prop => !isNaN(prop) && localStorage[prop]  ? todoListArr.push(JSON.parse(localStorage[prop])) : console.log('basket')); v 0.0.5
+	       	// localStorage.removeItem(id);   v 0.0.5
+			// localStorage.setItem(id, JSON.stringify(tempObj));	v 0.0.5
+		// localStorage.setItem(id, JSON.stringify(tempObj));	
 
 			  	// display.removeEventListener('mousedown', editSleep);	
 	       	// display.addEventListener('mousedown', editSleep);
