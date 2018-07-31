@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () =>{
 	init();
 
 	const dateForInp = new Date();
-	date_field.value = `${dateForInp.getFullYear()}-${dateForInp.getMonth()+1 < 10 ? '0'+(dateForInp.getMonth()+1) :  dateForInp.getMonth()+1}-${dateForInp.getDate()+1}`;
+	date_field.value = `${dateForInp.getFullYear()}-${dateForInp.getMonth()+1 < 10 ? '0'+(dateForInp.getMonth()+1) :  dateForInp.getMonth()+1}-${dateForInp.getDate()}`;
  	
 	clearBasketBtn.addEventListener('click', clearBasket);
 
