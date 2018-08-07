@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () =>{
 	const rowExampl = document.querySelector('.row-list');	
 
 	let todoListArr = [];
-	let infoFromInput = {}; 
+	let infoFromInput = {};
 
 	function init(){
 		if (!localStorage.getItem('todoStorage')) {
@@ -24,8 +24,10 @@ document.addEventListener('DOMContentLoaded', () =>{
 	init();
 
 	const dateForInp = new Date();
-	date_field.value = `${dateForInp.getFullYear()}-${dateForInp.getMonth()+1 < 10 ? '0'+(dateForInp.getMonth()+1) :  dateForInp.getMonth()+1}-${dateForInp.getDate()}`;
- 	
+	let asd = `${dateForInp.getFullYear()}-${dateForInp.getMonth()+1 < 10 ? '0'+(dateForInp.getMonth()+1) :  dateForInp.getMonth()+1}-${dateForInp.getDate() < 10 ? '0'+(dateForInp.getDate()) :  dateForInp.getDate()}`;
+	date_field.value = asd;
+	// console.log(asd);
+
 	clearBasketBtn.addEventListener('click', clearBasket);
 
 	function clearBasket() {
@@ -265,18 +267,18 @@ document.addEventListener('DOMContentLoaded', () =>{
 			basketBtn.classList.remove('tab');
 		}	
 
+			display.addEventListener('mousedown', mousedownStart);
+			display.addEventListener('mouseup', mouseupStart);
+
 			// - work with sleeping lmc
 			let mousedown = false;
 			let mousedown_timer = '';			 
-
-			display.addEventListener('mousedown', mousedownStart);
-			display.addEventListener('mouseup', mouseupStart);
 
 			function mousedownStart(e){
 				mousedown = true;
 			    mousedown_timer = setTimeout(() => {
 			        if(mousedown) {
-			            curRow = e.target.closest('.row-list'); 
+			            curRow = e.target.closest('.row-list');
 			            readyEdit();    			
 						openEdit();		
 			        }
