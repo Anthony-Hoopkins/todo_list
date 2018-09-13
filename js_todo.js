@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () =>{
 		}
 		if (!localStorage.getItem('basket')) {
 		 	localStorage.setItem('basket', JSON.stringify([]));
-		}
+		}		
 	}
 	init();
 
@@ -111,33 +111,54 @@ document.addEventListener('DOMContentLoaded', () =>{
 					}
 				});
 			},
-			remove: function remove(){
-				let todoArrBasket = [];			
+			remove: function remove(){				 	
 				let itemRemove;
 				storageArr.forEach( (prop,i) => {
 					if (prop.id == id){
 						itemRemove = storageArr.splice(i,1)[0];
 					}
-				});
-				todoArrBasket = JSON.parse(localStorage.getItem('basket'));
+				});				
 		       	todoArrBasket.push(itemRemove);
-		       	localStorage.setItem('basket',  JSON.stringify(todoArrBasket));
-			} 
+			},
+			unRemove: function unRemove(){					
+				let itemRemove;
+				console.log('un Remove');
+				todoArrBasket.forEach( (prop,i) => {
+					if (prop.id == id){
+						itemRemove = todoArrBasket.splice(i,1)[0];
+					}
+				});
+		       	storageArr.push(itemRemove);		       
+			},
+			removeForever: function removeForever(){				 	
+				let itemRemove;
+				console.log('remove Forever');
+				todoArrBasket.forEach( (prop,i) => {
+					if (prop.id == id){
+						console.log(todoArrBasket.splice(i,1)[0]);
+					}
+				});				
+			},
 		};
 
+		const todoArrBasket = JSON.parse(localStorage.getItem('basket'));
 		const storageArr = JSON.parse(localStorage.getItem('todoStorage'));
 
 		objOfFunc[index]();
 
 		localStorage.setItem('todoStorage', JSON.stringify(storageArr));
-		
+		localStorage.setItem('basket',  JSON.stringify(todoArrBasket));
 	}
+
+	//--------------------------
 
 	function Actions() {
 
 		let curRow;
 		let infoForEdit;
 		let dateForEdit;
+		display.addEventListener('mousedown', mousedownStart);
+		display.addEventListener('mouseup', mouseupStart);
 
 		function commadRun(e){
 			const commandName = e.target.className.slice(0,4);	
@@ -148,10 +169,21 @@ document.addEventListener('DOMContentLoaded', () =>{
 	    };
 
 	    this.remo = function() {
-
 	       	const id = curRow.getAttribute('data-id');
 	       	curRow.remove();
 	       	todoStorageChange('itemRemove', id, 'remove');
+	    };	    
+
+	    this.unre = function() {
+	       	const id = curRow.getAttribute('data-id');
+	       	curRow.remove();
+	       	todoStorageChange('itemRemove', id, 'unRemove');
+	    };
+
+	    this.remf = function() {
+	       	const id = curRow.getAttribute('data-id');
+	       	curRow.remove();
+	       	todoStorageChange('itemRemove', id, 'removeForever');
 	    };
 
 	    this.read = function() {
@@ -186,6 +218,8 @@ document.addEventListener('DOMContentLoaded', () =>{
 			curRow.querySelector('.save-btn').addEventListener('click', saveAndExit);
 			display.removeEventListener('click', commadRun);
 			window.addEventListener('keydown', saveChange);
+			display.removeEventListener('mousedown', mousedownStart);
+			display.removeEventListener('mouseup', mouseupStart);
 	   	}
 
 	   	function readyEdit(){
@@ -202,6 +236,8 @@ document.addEventListener('DOMContentLoaded', () =>{
 			curRow.querySelector('.edit-btn').classList.remove('hidden');   
 			curRow.querySelector('.save-btn').classList.add('hidden');   
 			window.removeEventListener('keydown', saveChange);
+			display.addEventListener('mousedown', mousedownStart);
+			display.addEventListener('mouseup', mouseupStart);
 	   	}
 
 		let self = this;
@@ -248,7 +284,12 @@ document.addEventListener('DOMContentLoaded', () =>{
 
 			display.innerHTML = '';
 			fillTodoDisplay(JSON.parse(localStorage.getItem('basket'))); 
-			display.querySelectorAll('.btn-panel').forEach(prop => prop.innerHTML = '');
+			display.querySelectorAll('.btn-panel').forEach(prop => {
+				prop.querySelector('.unremove-btn').classList.remove('hidden');
+				prop.querySelector('.edit-btn').classList.add('hidden');
+				prop.querySelector('.remove-btn').classList.add('hidden');
+				prop.querySelector('.remforever-btn').classList.remove('hidden');
+			});
 			basketBtn.innerHTML = 'X';
 			basketBtn.classList.add('tab');
 		}	
@@ -265,10 +306,7 @@ document.addEventListener('DOMContentLoaded', () =>{
 			loadDataFromStore();
 			basketBtn.innerHTML = 'History';
 			basketBtn.classList.remove('tab');
-		}	
-
-			display.addEventListener('mousedown', mousedownStart);
-			display.addEventListener('mouseup', mouseupStart);
+		}			
 
 			// - work with sleeping lmc
 			let mousedown = false;

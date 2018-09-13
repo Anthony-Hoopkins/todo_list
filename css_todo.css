@@ -102,11 +102,27 @@
 	background-position: 122px 708px; 
 }
 
+.row-list .remforever-btn{
+	background-position: 122px 976px; 
+}
+
+.row-list .remforever-btn:hover{
+	background-position: 122px 708px; 
+}
+
 .row-list:nth-child(odd) .remove-btn{
 	background-position: 122px 437px; 
 }
 
 .row-list:nth-child(odd) .remove-btn:hover{
+	background-position: 122px 156px; 
+}
+
+.row-list:nth-child(odd) .remforever-btn{
+	background-position: 122px 437px; 
+}
+
+.row-list:nth-child(odd) .remforever-btn:hover{
 	background-position: 122px 156px; 
 }
 
@@ -126,8 +142,26 @@
 	background-position: 247px 111px;
 }
 
+
+
+.row-list .unremove-btn{
+	background-position: -4px 931px; 
+}
+
+.row-list .unremove-btn:hover{
+	background-position: -4px 663px; 
+}
+ 
+.row-list:nth-child(odd) .unremove-btn{
+	background-position: -4px 392px; 
+}
+
+.row-list:nth-child(odd) .unremove-btn:hover{
+	background-position: -4px 111px; 
+}
+
 .tab{
-	padding: 3px 17px 28px;	 
+	padding: 3px 17px 34px;	 
 	margin-left: 10px;
 	border: 0;
 	border: 1px solid grey;
@@ -163,4 +197,13 @@
 .ready-class{
 	color: #00bcd4;
 	text-decoration: line-through;
+}
+
+.sort-btn{
+	height: 27px;
+}
+
+.clear-basket-btn.btn:hover{
+	color: red;
+	box-shadow:  2px 2px 2px 2px red;
 }
